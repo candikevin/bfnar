@@ -1,0 +1,35 @@
+#!/usr/bin/env python
+
+import os, sys
+
+comment_out = False
+if len(sys.argv)==2 and sys.argv[1] == '-x':
+    comment_out = True
+
+#apache_file = 'candi-ssl'
+apache_file = '/etc/apache2/sites-enabled/candi-ssl'
+
+bf_header = ''
+if not comment_out:
+    #bf_header = 'worked=true&expires=1463149919&userId=69dbe900-139f-48b2-a214-bf49eb0289fc&agentIds=1bf7a01f-7f34-426c-890e-30c24678dd4c%2C-%2Crequest-id-cadf2542-1671-4d01-80ef-bf19c81fbccf&profileSlot=00000000-0000-0000-0000-000000000000&collabToken=a10e18de-513d-4e4d-9866-b915a09cd54c&signature=RWQUOK8zFv1ASuY4YDSxyOARgy5GrmB77LZt1tGmc1AveYGzwSyk_t-f7lg1yDPlhho9bKDEVHMzJlj-gBzQMKLfA2OlIu_rJAc%3D&aggreg_samples=1&flag_cpu=1&flag_memory=1&flag_nw=1&flag_sessions=1&aggreg_samples=1'
+    bf_header = os.popen("blackfire run sh -c 'echo $BLACKFIRE_QUERY'").read().rstrip()
+    print bf_header
+
+key = "RequestHeader set X-Blackfire-Query"
+
+file = open(apache_file, 'r')
+newlines = []
+for line in file:
+    if line.lstrip('# \t').startswith(key):
+        if comment_out:
+            line = '#' + key + '\n'
+        else:
+            line = key + ' ' + bf_header.replace('%', '%%') + '\n'
+    newlines.append(line)
+file.close()
+
+file = open(apache_file, 'w')
+file.writelines(newlines)
+file.close()
+
+os.system('service apache2 restart')
