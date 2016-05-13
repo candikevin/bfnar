@@ -1,7 +1,9 @@
 bfnar
 =====
 
-"Blackfire Next Apache Request." Gets a token from Blackfire and configures Apache to include the X-Blackfire-Query header. Note that it restarts Apache for you.
+"Blackfire Next Apache Request." Gets a token from Blackfire and configures Apache to include the X-Blackfire-Query header. I use this to profile gateway -> cloud requests because I don't control the gateway.
+
+Note that it restarts Apache for you.
 
 Setup
 -----
